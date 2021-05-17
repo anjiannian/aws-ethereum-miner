@@ -1,162 +1,226 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "location": {
+        "virtualNetworks_MineCoinvnet652_name": {
+            "defaultValue": "MineCoinvnet652",
             "type": "String"
         },
-        "virtualMachineScaleSetName": {
+        "virtualMachineScaleSets_MineCoin_name": {
+            "defaultValue": "MineCoin",
             "type": "String"
         },
-        "virtualMachineScaleSetRG": {
+        "autoscalesettings_MineCoin_Autoscale_734_name": {
+            "defaultValue": "MineCoin-Autoscale-734",
             "type": "String"
         },
-        "singlePlacementGroup": {
+        "publicIPAddresses_publicIp_MineCoinvnet652_nic01_name": {
+            "defaultValue": "publicIp-MineCoinvnet652-nic01",
             "type": "String"
         },
-        "instanceSize": {
+        "networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name": {
+            "defaultValue": "basicNsgMineCoinvnet652-nic01",
             "type": "String"
         },
-        "instanceCount": {
+        "disks_MineCoin_MineCoin_2_OsDisk_1_f4cbf17341124aa491ef09a87ae815d7_externalid": {
+            "defaultValue": "/subscriptions/c0865aa2-b6a3-4853-a888-0d91f5bb9f05/resourceGroups/MineCoin/providers/Microsoft.Compute/disks/MineCoin_MineCoin_2_OsDisk_1_f4cbf17341124aa491ef09a87ae815d7",
             "type": "String"
         },
-        "upgradeMode": {
-            "type": "String"
-        },
-        "priority": {
-            "type": "String"
-        },
-        "enableAcceleratedNetworking": {
-            "type": "String"
-        },
-        "osDiskType": {
-            "type": "String"
-        },
-        "addressPrefixes": {
-            "type": "Array"
-        },
-        "subnets": {
-            "type": "Array"
-        },
-        "virtualNetworkId": {
-            "type": "String"
-        },
-        "virtualNetworkName": {
-            "type": "String"
-        },
-        "networkSecurityGroups": {
-            "type": "Array"
-        },
-        "publicIpAddresses": {
-            "type": "Array"
-        },
-        "networkInterfaceConfigurations": {
-            "type": "Array"
-        },
-        "vmName": {
-            "type": "String"
-        },
-        "scaleInPolicy": {
-            "type": "Object"
-        },
-        "overprovision": {
-            "type": "Bool"
-        },
-        "upgradePolicy": {
-            "type": "String"
-        },
-        "adminUsername": {
-            "type": "String"
-        },
-        "adminPublicKey": {
-            "type": "SecureString"
-        },
-        "customData": {
-            "type": "SecureString"
-        },
-        "evictionPolicy": {
-            "type": "String"
-        },
-        "platformFaultDomainCount": {
+        "disks_MineCoin_MineCoin_7_OsDisk_1_353c545225a04f13afd7eb90177069bb_externalid": {
+            "defaultValue": "/subscriptions/c0865aa2-b6a3-4853-a888-0d91f5bb9f05/resourceGroups/MineCoin/providers/Microsoft.Compute/disks/MineCoin_MineCoin_7_OsDisk_1_353c545225a04f13afd7eb90177069bb",
             "type": "String"
         }
     },
-    "variables": {
-        "storageApiVersion": "2019-04-01",
-        "namingInfix": "[toLower(substring(concat(parameters('virtualMachineScaleSetName'), uniqueString(resourceGroup().id)), 0, 9))]"
-    },
+    "variables": {},
     "resources": [
         {
-            "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2019-09-01",
-            "name": "[parameters('virtualNetworkName')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": "[parameters('addressPrefixes')]"
-                },
-                "subnets": "[parameters('subnets')]"
-            }
-        },
-        {
             "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-02-01",
-            "name": "[parameters('networkSecurityGroups')[copyIndex()].name]",
-            "location": "[parameters('location')]",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name')]",
+            "location": "eastus",
             "properties": {
-                "securityRules": "[parameters('networkSecurityGroups')[copyIndex()].rules]"
-            },
-            "copy": {
-                "name": "networkSecurityGroups",
-                "count": "[length(parameters('networkSecurityGroups'))]"
+                "securityRules": [
+                    {
+                        "name": "SSH",
+                        "properties": {
+                            "protocol": "TCP",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 300,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
             }
         },
         {
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2019-02-01",
-            "name": "[parameters('publicIpAddresses')[copyIndex()].name]",
-            "location": "[parameters('location')]",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('publicIPAddresses_publicIp_MineCoinvnet652_nic01_name')]",
+            "location": "eastus",
             "sku": {
-                "name": "Standard"
+                "name": "Standard",
+                "tier": "Regional"
             },
+            "zones": [
+                "1",
+                "2",
+                "3"
+            ],
             "properties": {
+                "ipAddress": "20.81.65.218",
+                "publicIPAddressVersion": "IPv4",
                 "publicIPAllocationMethod": "Static",
-                "idleTimeoutInMinutes": 15
-            },
-            "copy": {
-                "name": "publicIpAddresses",
-                "count": "[length(parameters('publicIpAddresses'))]"
+                "idleTimeoutInMinutes": 15,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('virtualNetworks_MineCoinvnet652_name')]",
+            "location": "eastus",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.3.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "10.3.0.0/16",
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false
+            }
+        },
+        {
+            "type": "microsoft.insights/autoscalesettings",
+            "apiVersion": "2015-04-01",
+            "name": "[parameters('autoscalesettings_MineCoin_Autoscale_734_name')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('virtualMachineScaleSets_MineCoin_name'))]"
+            ],
+            "properties": {
+                "profiles": [
+                    {
+                        "name": "Auto created scale condition",
+                        "capacity": {
+                            "minimum": "2",
+                            "maximum": "2",
+                            "default": "2"
+                        },
+                        "rules": []
+                    }
+                ],
+                "enabled": true,
+                "name": "[parameters('autoscalesettings_MineCoin_Autoscale_734_name')]",
+                "targetResourceUri": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('virtualMachineScaleSets_MineCoin_name'))]",
+                "notifications": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name'), '/SSH')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name'))]"
+            ],
+            "properties": {
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "destinationPortRange": "22",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 300,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('virtualNetworks_MineCoinvnet652_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_MineCoinvnet652_name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "10.3.0.0/16",
+                "delegations": [],
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
             }
         },
         {
             "type": "Microsoft.Compute/virtualMachineScaleSets",
             "apiVersion": "2020-12-01",
-            "name": "[parameters('virtualMachineScaleSetName')]",
-            "location": "[parameters('location')]",
+            "name": "[parameters('virtualMachineScaleSets_MineCoin_name')]",
+            "location": "eastus",
             "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
-                "networkSecurityGroups",
-                "publicIpAddresses",
-                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_MineCoinvnet652_name'), 'default')]"
             ],
             "sku": {
-                "name": "[parameters('instanceSize')]",
-                "capacity": "[int(parameters('instanceCount'))]"
+                "name": "Standard_NC6s_v3",
+                "tier": "Standard",
+                "capacity": 2
             },
             "properties": {
-                "overprovision": "[parameters('overprovision')]",
+                "singlePlacementGroup": false,
                 "upgradePolicy": {
-                    "mode": "[parameters('upgradePolicy')]"
+                    "mode": "Manual"
                 },
-                "singlePlacementGroup": "[parameters('singlePlacementGroup')]",
+                "scaleInPolicy": {
+                    "rules": [
+                        "Default"
+                    ]
+                },
                 "virtualMachineProfile": {
+                    "osProfile": {
+                        "computerNamePrefix": "minecoink",
+                        "adminUsername": "azureuser",
+                        "linuxConfiguration": {
+                            "disablePasswordAuthentication": true,
+                            "ssh": {
+                                "publicKeys": [
+                                    {
+                                        "path": "/home/azureuser/.ssh/authorized_keys",
+                                        "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+s992MYkCQtlxMByA3yaQxWr9CQe4dZcQm4y30LctphCS/APu63HWP/IHm2/zscpBr+f5Di5GGrJ2TsmegbJ3ymoGTnOL3ykZ6NsaiqG9MGZk+CcBZaYoYKcU0kpCyKY9sWnuROeeQeXIxXkXKAQR9hMasG2GHOsx1Mli6G/qOCtaZZcJDnfLo3LD8TUETMB/dgs0n5i8h+p1OP8azJQP88kWsYQavFxxP1HvUaNReC/FOO2xmpj4j5KF853NTCYcStidqEZUYyYa7tgwtQ1di2z/qT3ToodFX4pxc2EmQvgnpuPZL+rMGH+GOWyq7pkKaUK+3ijh+PVoH1nRroVL dawei.ma@CNdawei.ma"
+                                    }
+                                ]
+                            },
+                            "provisionVMAgent": true
+                        },
+                        "secrets": []
+                    },
                     "storageProfile": {
                         "osDisk": {
-                            "createOption": "fromImage",
+                            "osType": "Linux",
+                            "createOption": "FromImage",
                             "caching": "ReadWrite",
                             "managedDisk": {
-                                "storageAccountType": "[parameters('osDiskType')]"
-                            }
+                                "storageAccountType": "Premium_LRS"
+                            },
+                            "diskSizeGB": 150
                         },
                         "imageReference": {
                             "publisher": "microsoft-dsvm",
@@ -166,75 +230,275 @@
                         }
                     },
                     "networkProfile": {
-                        "copy": [
+                        "networkInterfaceConfigurations": [
                             {
-                                "name": "networkInterfaceConfigurations",
-                                "count": "[length(parameters('networkInterfaceConfigurations'))]",
-                                "input": {
-                                    "name": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name]",
-                                    "properties": {
-                                        "primary": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
-                                        "enableAcceleratedNetworking": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].enableAcceleratedNetworking]",
-                                        "ipConfigurations": [
-                                            {
-                                                "name": "[concat(take(parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name, sub(80, length('-defaultIpConfiguration'))), '-defaultIpConfiguration')]",
-                                                "properties": {
-                                                    "subnet": {
-                                                        "id": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].subnetId]"
-                                                    },
-                                                    "primary": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
-                                                    "applicationGatewayBackendAddressPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].applicationGatewayBackendAddressPools]",
-                                                    "loadBalancerBackendAddressPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].loadBalancerBackendAddressPools]",
-                                                    "loadBalancerInboundNatPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].loadBalancerInboundNatPools]",
-                                                    "publicIPAddressConfiguration": "[if( equals( parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, ''), json('null'), union(json(concat('{\"name\": \"', parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, '\"}'))\n                        ,json('{\"properties\": { \"idleTimeoutInMinutes\": 15}}')))]"
-                                                }
+                                "name": "[concat(parameters('virtualMachineScaleSets_MineCoin_name'), 'vnet652-nic01')]",
+                                "properties": {
+                                    "primary": true,
+                                    "enableAcceleratedNetworking": true,
+                                    "networkSecurityGroup": {
+                                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name'))]"
+                                    },
+                                    "dnsSettings": {
+                                        "dnsServers": []
+                                    },
+                                    "enableIPForwarding": false,
+                                    "ipConfigurations": [
+                                        {
+                                            "name": "[concat(parameters('virtualMachineScaleSets_MineCoin_name'), 'vnet652-nic01-defaultIpConfiguration')]",
+                                            "properties": {
+                                                "publicIPAddressConfiguration": {
+                                                    "name": "[concat('publicIp-', parameters('virtualMachineScaleSets_MineCoin_name'), 'vnet652-nic01')]",
+                                                    "properties": {
+                                                        "idleTimeoutInMinutes": 15,
+                                                        "ipTags": [],
+                                                        "publicIPAddressVersion": "IPv4"
+                                                    }
+                                                },
+                                                "primary": true,
+                                                "subnet": {
+                                                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_MineCoinvnet652_name'), 'default')]"
+                                                },
+                                                "privateIPAddressVersion": "IPv4"
                                             }
-                                        ],
-                                        "networkSecurityGroup": "[if( equals( parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, ''), json('null'),json(concat('{\"id\": \"', parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, '\"}')))]"
-                                    }
+                                        }
+                                    ]
                                 }
                             }
                         ]
                     },
-                    "extensionProfile": {
-                        "extensions": []
-                    },
-                    "priority": "[parameters('priority')]",
                     "diagnosticsProfile": {
                         "bootDiagnostics": {
                             "enabled": true
                         }
                     },
-                    "osProfile": {
-                        "computerNamePrefix": "[variables('namingInfix')]",
-                        "adminUsername": "[parameters('adminUsername')]",
-                        "linuxConfiguration": {
-                            "disablePasswordAuthentication": true,
-                            "ssh": {
-                                "publicKeys": [
+                    "extensionProfile": {
+                        "extensions": []
+                    },
+                    "priority": "Spot",
+                    "evictionPolicy": "Delete",
+                    "billingProfile": {
+                        "maxPrice": 0.41
+                    }
+                },
+                "overprovision": true,
+                "doNotRunExtensionsOnOverprovisionedVMs": false,
+                "platformFaultDomainCount": 1
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines",
+            "apiVersion": "2020-12-01",
+            "name": "[concat(parameters('virtualMachineScaleSets_MineCoin_name'), '/2')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('virtualMachineScaleSets_MineCoin_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_MineCoinvnet652_name'), 'default')]"
+            ],
+            "sku": {
+                "name": "Standard_NC6s_v3",
+                "tier": "Standard"
+            },
+            "properties": {
+                "networkProfileConfiguration": {
+                    "networkInterfaceConfigurations": [
+                        {
+                            "name": "MineCoinvnet652-nic01",
+                            "properties": {
+                                "primary": true,
+                                "enableAcceleratedNetworking": true,
+                                "networkSecurityGroup": {
+                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name'))]"
+                                },
+                                "dnsSettings": {
+                                    "dnsServers": []
+                                },
+                                "enableIPForwarding": false,
+                                "ipConfigurations": [
                                     {
-                                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-                                        "keyData": "[parameters('adminPublicKey')]"
+                                        "name": "MineCoinvnet652-nic01-defaultIpConfiguration",
+                                        "properties": {
+                                            "publicIPAddressConfiguration": {
+                                                "name": "publicIp-MineCoinvnet652-nic01",
+                                                "properties": {
+                                                    "idleTimeoutInMinutes": 15,
+                                                    "ipTags": [],
+                                                    "publicIPAddressVersion": "IPv4"
+                                                }
+                                            },
+                                            "primary": true,
+                                            "subnet": {
+                                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_MineCoinvnet652_name'), 'default')]"
+                                            },
+                                            "privateIPAddressVersion": "IPv4"
+                                        }
                                     }
                                 ]
                             }
-                        },
-                        "customData": "[parameters('customData')]"
-                    },
-                    "billingProfile": {
-                        "maxPrice": 0.41
-                    },
-                    "evictionPolicy": "[parameters('evictionPolicy')]"
+                        }
+                    ]
                 },
-                "scaleInPolicy": "[parameters('scaleInPolicy')]",
-                "platformFaultDomainCount": "[parameters('platformFaultDomainCount')]"
+                "hardwareProfile": {},
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "microsoft-dsvm",
+                        "offer": "ubuntu-1804",
+                        "sku": "1804",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "MineCoin_MineCoin_2_OsDisk_1_f4cbf17341124aa491ef09a87ae815d7",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS",
+                            "id": "[parameters('disks_MineCoin_MineCoin_2_OsDisk_1_f4cbf17341124aa491ef09a87ae815d7_externalid')]"
+                        },
+                        "diskSizeGB": 150
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "minecoink000002",
+                    "adminUsername": "azureuser",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "/home/azureuser/.ssh/authorized_keys",
+                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+s992MYkCQtlxMByA3yaQxWr9CQe4dZcQm4y30LctphCS/APu63HWP/IHm2/zscpBr+f5Di5GGrJ2TsmegbJ3ymoGTnOL3ykZ6NsaiqG9MGZk+CcBZaYoYKcU0kpCyKY9sWnuROeeQeXIxXkXKAQR9hMasG2GHOsx1Mli6G/qOCtaZZcJDnfLo3LD8TUETMB/dgs0n5i8h+p1OP8azJQP88kWsYQavFxxP1HvUaNReC/FOO2xmpj4j5KF853NTCYcStidqEZUYyYa7tgwtQ1di2z/qT3ToodFX4pxc2EmQvgnpuPZL+rMGH+GOWyq7pkKaUK+3ijh+PVoH1nRroVL dawei.ma@CNdawei.ma"
+                                }
+                            ]
+                        },
+                        "provisionVMAgent": true
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[concat(resourceId('Microsoft.Compute/virtualMachineScaleSets/virtualMachines', parameters('virtualMachineScaleSets_MineCoin_name'), '2'), '/networkInterfaces/MineCoinvnet652-nic01')]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines",
+            "apiVersion": "2020-12-01",
+            "name": "[concat(parameters('virtualMachineScaleSets_MineCoin_name'), '/7')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('virtualMachineScaleSets_MineCoin_name'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_MineCoinvnet652_name'), 'default')]"
+            ],
+            "sku": {
+                "name": "Standard_NC6s_v3",
+                "tier": "Standard"
+            },
+            "properties": {
+                "networkProfileConfiguration": {
+                    "networkInterfaceConfigurations": [
+                        {
+                            "name": "MineCoinvnet652-nic01",
+                            "properties": {
+                                "primary": true,
+                                "enableAcceleratedNetworking": true,
+                                "networkSecurityGroup": {
+                                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name'))]"
+                                },
+                                "dnsSettings": {
+                                    "dnsServers": []
+                                },
+                                "enableIPForwarding": false,
+                                "ipConfigurations": [
+                                    {
+                                        "name": "MineCoinvnet652-nic01-defaultIpConfiguration",
+                                        "properties": {
+                                            "publicIPAddressConfiguration": {
+                                                "name": "publicIp-MineCoinvnet652-nic01",
+                                                "properties": {
+                                                    "idleTimeoutInMinutes": 15,
+                                                    "ipTags": [],
+                                                    "publicIPAddressVersion": "IPv4"
+                                                }
+                                            },
+                                            "primary": true,
+                                            "subnet": {
+                                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_MineCoinvnet652_name'), 'default')]"
+                                            },
+                                            "privateIPAddressVersion": "IPv4"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "hardwareProfile": {},
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "microsoft-dsvm",
+                        "offer": "ubuntu-1804",
+                        "sku": "1804",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "MineCoin_MineCoin_7_OsDisk_1_353c545225a04f13afd7eb90177069bb",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS",
+                            "id": "[parameters('disks_MineCoin_MineCoin_7_OsDisk_1_353c545225a04f13afd7eb90177069bb_externalid')]"
+                        },
+                        "diskSizeGB": 150
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "minecoink000007",
+                    "adminUsername": "azureuser",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "/home/azureuser/.ssh/authorized_keys",
+                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+s992MYkCQtlxMByA3yaQxWr9CQe4dZcQm4y30LctphCS/APu63HWP/IHm2/zscpBr+f5Di5GGrJ2TsmegbJ3ymoGTnOL3ykZ6NsaiqG9MGZk+CcBZaYoYKcU0kpCyKY9sWnuROeeQeXIxXkXKAQR9hMasG2GHOsx1Mli6G/qOCtaZZcJDnfLo3LD8TUETMB/dgs0n5i8h+p1OP8azJQP88kWsYQavFxxP1HvUaNReC/FOO2xmpj4j5KF853NTCYcStidqEZUYyYa7tgwtQ1di2z/qT3ToodFX4pxc2EmQvgnpuPZL+rMGH+GOWyq7pkKaUK+3ijh+PVoH1nRroVL dawei.ma@CNdawei.ma"
+                                }
+                            ]
+                        },
+                        "provisionVMAgent": true
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[concat(resourceId('Microsoft.Compute/virtualMachineScaleSets/virtualMachines', parameters('virtualMachineScaleSets_MineCoin_name'), '7'), '/networkInterfaces/MineCoinvnet652-nic01')]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
             }
         }
-    ],
-    "outputs": {
-        "adminUsername": {
-            "type": "String",
-            "value": "[parameters('adminUsername')]"
-        }
-    }
+    ]
 }

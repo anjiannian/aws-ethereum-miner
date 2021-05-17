@@ -2,134 +2,26 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "location": {
-            "value": "eastus"
-        },
-        "virtualMachineScaleSetName": {
-            "value": "MineCoin"
-        },
-        "virtualMachineScaleSetRG": {
-            "value": "MineCoin"
-        },
-        "singlePlacementGroup": {
-            "value": "false"
-        },
-        "instanceSize": {
-            "value": "Standard_NC6s_v3"
-        },
-        "instanceCount": {
-            "value": "1"
-        },
-        "upgradeMode": {
-            "value": "Manual"
-        },
-        "priority": {
-            "value": "Spot"
-        },
-        "enableAcceleratedNetworking": {
-            "value": "false"
-        },
-        "osDiskType": {
-            "value": "Premium_LRS"
-        },
-        "addressPrefixes": {
-            "value": [
-                "10.3.0.0/16"
-            ]
-        },
-        "subnets": {
-            "value": [
-                {
-                    "name": "default",
-                    "properties": {
-                        "addressPrefix": "10.3.0.0/16"
-                    }
-                }
-            ]
-        },
-        "virtualNetworkId": {
-            "value": "/subscriptions/c0865aa2-b6a3-4853-a888-0d91f5bb9f05/resourceGroups/MineCoin/providers/Microsoft.Network/virtualNetworks/MineCoinvnet652"
-        },
-        "virtualNetworkName": {
-            "value": "MineCoinvnet652"
-        },
-        "networkSecurityGroups": {
-            "value": [
-                {
-                    "name": "basicNsgMineCoinvnet652-nic01",
-                    "id": "/subscriptions/c0865aa2-b6a3-4853-a888-0d91f5bb9f05/resourceGroups/MineCoin/providers/Microsoft.Network/networkSecurityGroups/basicNsgMineCoinvnet652-nic01",
-                    "rules": [
-                        {
-                            "name": "SSH",
-                            "properties": {
-                                "priority": 300,
-                                "protocol": "TCP",
-                                "access": "Allow",
-                                "direction": "Inbound",
-                                "sourceAddressPrefix": "*",
-                                "sourcePortRange": "*",
-                                "destinationAddressPrefix": "*",
-                                "destinationPortRange": "22"
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        "publicIpAddresses": {
-            "value": [
-                {
-                    "name": "publicIp-MineCoinvnet652-nic01"
-                }
-            ]
-        },
-        "networkInterfaceConfigurations": {
-            "value": [
-                {
-                    "name": "MineCoinvnet652-nic01",
-                    "primary": true,
-                    "subnetId": "/subscriptions/c0865aa2-b6a3-4853-a888-0d91f5bb9f05/resourceGroups/MineCoin/providers/Microsoft.Network/virtualNetworks/MineCoinvnet652/subnets/default",
-                    "applicationGatewayBackendAddressPools": [],
-                    "loadBalancerBackendAddressPools": [],
-                    "applicationSecurityGroups": [],
-                    "loadBalancerInboundNatPools": [],
-                    "enableAcceleratedNetworking": true,
-                    "nsgName": "basicNsgMineCoinvnet652-nic01",
-                    "nsgId": "/subscriptions/c0865aa2-b6a3-4853-a888-0d91f5bb9f05/resourceGroups/MineCoin/providers/Microsoft.Network/networkSecurityGroups/basicNsgMineCoinvnet652-nic01",
-                    "pipName": "publicIp-MineCoinvnet652-nic01"
-                }
-            ]
-        },
-        "vmName": {
-            "value": "MineCoin"
-        },
-        "scaleInPolicy": {
-            "value": {
-                "rules": [
-                    "Default"
-                ]
-            }
-        },
-        "overprovision": {
-            "value": true
-        },
-        "upgradePolicy": {
-            "value": "Manual"
-        },
-        "adminUsername": {
-            "value": "azureuser"
-        },
-        "adminPublicKey": {
+        "virtualNetworks_MineCoinvnet652_name": {
             "value": null
         },
-        "customData": {
+        "virtualMachineScaleSets_MineCoin_name": {
             "value": null
         },
-        "evictionPolicy": {
-            "value": "Delete"
+        "autoscalesettings_MineCoin_Autoscale_734_name": {
+            "value": null
         },
-        "platformFaultDomainCount": {
-            "value": "1"
+        "publicIPAddresses_publicIp_MineCoinvnet652_nic01_name": {
+            "value": null
+        },
+        "networkSecurityGroups_basicNsgMineCoinvnet652_nic01_name": {
+            "value": null
+        },
+        "disks_MineCoin_MineCoin_2_OsDisk_1_f4cbf17341124aa491ef09a87ae815d7_externalid": {
+            "value": null
+        },
+        "disks_MineCoin_MineCoin_7_OsDisk_1_353c545225a04f13afd7eb90177069bb_externalid": {
+            "value": null
         }
     }
 }
