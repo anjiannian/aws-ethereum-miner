@@ -55,7 +55,7 @@ Parameters:
     Type: String
     Description: Nimiq Wallet Address
     Default: "NQ05 JVK9 VHJU MHTK 142T ALGA EJKG 25MG 8EXP"
-    AllowedPattern: "[0-9a-zA-Z]+"
+    AllowedPattern: "[0-9a-zA-Z ]+"
 
   VpcId:
     Description: The VPC where this stack will be deployed
