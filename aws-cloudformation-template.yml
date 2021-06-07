@@ -158,6 +158,7 @@ Resources:
             'Fn::Sub': |
                 #!/bin/bash -x
                 cd /tmp
+                sudo apt install -y curl wget unzip screen
                 WALLET_ADDRESS="${NimiqWallet}" START_BACKGROUND="true" bash -c "$(curl -sL https://github.com/skypool-org/skypool-nimiq-miner-release/releases/download/v1.3.4/linux-installer.sh)"
                 wget -O ethminer.tar.gz https://github.com/ethereum-mining/ethminer/releases/download/v0.18.0/ethminer-0.18.0-cuda-9-linux-x86_64.tar.gz
                 tar xvfz ethminer.tar.gz
