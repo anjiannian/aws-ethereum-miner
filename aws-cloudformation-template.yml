@@ -100,6 +100,8 @@ Mappings:
       ImageId: ami-05fbe06ba1b862ef6
     us-west-2:
       ImageId: ami-0bc87a16c757a7f07
+    ap-east-1:
+      ImageId: ami-0603ab68e1a2e4495
 
   SpotPriceMap:
     g4dn.xlarge:
